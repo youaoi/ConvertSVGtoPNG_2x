@@ -1,0 +1,2 @@
+# ConvertSVGtoPNG_2x
+SVGファイルをドラッグ＆ドロップするだけで、高画質を保ったまま2倍サイズのPNGファイルに変換できるWindows用VBScriptです。
