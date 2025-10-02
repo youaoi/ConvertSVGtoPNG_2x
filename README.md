@@ -20,14 +20,11 @@
 
 ### 1. ImageMagickのインストール
 
-1.  **[ImageMagickの公式サイト](https://imagemagick.org/script/download.php)**にアクセスし、Windows用のインストーラーをダウンロードします。
+1.  [**ImageMagickの公式サイト**](https://imagemagick.org/script/download.php)にアクセスし、Windows用のインストーラーをダウンロードします。
 2.  インストーラーを起動し、ウィザードに従ってインストールを進めます。
 3.  **インストールの途中で表示される以下のオプションに、必ずチェックを入れてください。**
     * `Add application directory to your system path (PATH)`
     * `Install legacy utilities (e.g., convert)`
-
-    ![ImageMagick Installer Options](https://user-images.githubusercontent.com/12345/your-installer-screenshot.png)
-    *（ここにインストーラー画面のスクリーンショットURLを貼り付けてください）*
 
 ### 2. VBScriptファイルのダウンロード
 
