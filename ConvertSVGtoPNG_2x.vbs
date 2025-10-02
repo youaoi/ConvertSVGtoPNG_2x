@@ -1,91 +1,140 @@
 Option Explicit
 
 '==========================================================================
-' SVG to High-Quality PNG Converter (2x Size) - v2
+' SVG to High-Quality PNG Converter (Advanced Sizing) - v5.2
 '
-' ¡‹@”\
-'   SVGƒtƒ@ƒCƒ‹‚ğA‚‰æ¿‚ğ•Û‚Á‚½‚Ü‚ÜŒ³‚ÌƒTƒCƒY‚Ìc‰¡2”{‚ÌPNGƒtƒ@ƒCƒ‹‚É
-'   •ÏŠ·‚µ‚Ü‚·B”wŒi‚Í“§‰ß‚É‚È‚è‚Ü‚·B
+' â– æ©Ÿèƒ½
+'   SVGãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã€æŸ”è»Ÿãªã‚µã‚¤ã‚ºæŒ‡å®šã§é«˜ç”»è³ªãªPNGãƒ•ã‚¡ã‚¤ãƒ«ã«å¤‰æ›ã—ã¾ã™ã€‚
 '
-' ¡•ÏX“_ (v2)
-'   ‰æ‘œ‚ª‚Ú‚â‚¯‚é–â‘è‚É‘Î‰‚·‚é‚½‚ßA•ÏŠ·ˆ—‚Ì•û–@‚ğ•ÏX‚µ‚Ü‚µ‚½B
-'   SVG‚ğ“Ç‚İ‚Ş“_‚Ì‰ğ‘œ“x(DPI)‚ğ•W€‚Ì2”{(192 DPI)‚Éw’è‚·‚é‚±‚Æ‚ÅA
-'   ƒxƒNƒ^[î•ñ‚ÌƒfƒBƒe[ƒ‹‚ğ¸‚¤‚±‚Æ‚È‚­‚¸×‚ÈPNG‚ğ¶¬‚µ‚Ü‚·B
+' â– å¤‰æ›´ç‚¹ (v5.2)
+'   - ãƒ”ã‚¯ã‚»ãƒ«æŒ‡å®šæ™‚ (-resize) ã®å“è³ªã‚’å¤§å¹…ã«å‘ä¸Šã€‚
+'     SVGã‚’ä¸€åº¦ã€é«˜è§£åƒåº¦ (600 DPI) ã§èª­ã¿è¾¼ã‚“ã§ã‹ã‚‰ãƒªã‚µã‚¤ã‚ºã™ã‚‹ã“ã¨ã§ã€
+'     ã¼ã‚„ã‘ã®ç™ºç”Ÿã‚’é˜²ãã€å¸¸ã«ã‚·ãƒ£ãƒ¼ãƒ—ãªç”»åƒã‚’ç”Ÿæˆã—ã¾ã™ã€‚
 '
-' ¡g‚¢•û
-'   1. ‚±‚ÌƒXƒNƒŠƒvƒgƒtƒ@ƒCƒ‹(.vbs)‚ğƒfƒXƒNƒgƒbƒv‚È‚Ç‚É•Û‘¶‚µ‚Ü‚·B
-'   2. •ÏŠ·‚µ‚½‚¢SVGƒtƒ@ƒCƒ‹‚ğA‚±‚ÌƒXƒNƒŠƒvƒg‚ÌƒAƒCƒRƒ“‚Ìã‚É
-'      ƒhƒ‰ƒbƒO•ƒhƒƒbƒv‚µ‚Ü‚·Bi•¡”ƒtƒ@ƒCƒ‹‚à‰Âj
-'   3. SVGƒtƒ@ƒCƒ‹‚Æ“¯‚¶ƒtƒHƒ‹ƒ_‚ÉA”{ƒTƒCƒY‚ÌPNGƒtƒ@ƒCƒ‹‚ªì¬‚³‚ê‚Ü‚·B
+' â– ã‚µã‚¤ã‚ºæŒ‡å®šã®å½¢å¼
+'   - å€ç‡æŒ‡å®š: x1.5 (1.5å€), x2 (2å€)
+'   - % æŒ‡å®š:   150 (150%), 200 (200%)
+'   - å¹…æŒ‡å®š:   w200 (å¹…200px)
+'   - é«˜ã•æŒ‡å®š: h200 (é«˜ã•200px)
+'   - çµ¶å¯¾æŒ‡å®š: 200x100 (å¹…200px, é«˜ã•100px)
 '
-' ¡–‘O€”õ
-'   ‚±‚ÌƒXƒNƒŠƒvƒg‚ğÀs‚·‚é‚É‚ÍAuImageMagickv‚ªƒCƒ“ƒXƒg[ƒ‹‚³‚ê‚Ä‚¢‚é
-'   •K—v‚ª‚ ‚è‚Ü‚·B
-'   Œö®ƒTƒCƒg: https://imagemagick.org/
+' â– äº‹å‰æº–å‚™
+'   ã€ŒImageMagickã€ã®ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ãŒå¿…è¦ã§ã™ã€‚
 '
 '==========================================================================
 
 Dim objShell, objFSO, objArgs
-Dim strSVGPath, strPNGPath, strCommand, fileCount
+Dim strSVGPath, strPNGPath, strCommand, strResizeParam, fileCount, input, msg
 
-' --- ƒIƒuƒWƒFƒNƒg‚Ì¶¬ ---
+' --- ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆ ---
 Set objShell = CreateObject("WScript.Shell")
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 Set objArgs = WScript.Arguments
 fileCount = 0
 
-' --- ƒhƒ‰ƒbƒO•ƒhƒƒbƒv‚³‚ê‚½‚©ƒ`ƒFƒbƒN ---
+' --- ãƒ‰ãƒ©ãƒƒã‚°ï¼†ãƒ‰ãƒ­ãƒƒãƒ—ã•ã‚ŒãŸã‹ãƒã‚§ãƒƒã‚¯ ---
 If objArgs.Count = 0 Then
-    MsgBox "SVGƒtƒ@ƒCƒ‹‚ğ‚±‚ÌƒXƒNƒŠƒvƒg‚ÌƒAƒCƒRƒ“‚Éƒhƒ‰ƒbƒO•ƒhƒƒbƒv‚µ‚Ä‚­‚¾‚³‚¢B", vbInformation, "g‚¢•û"
+    MsgBox "SVGãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã“ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã®ã‚¢ã‚¤ã‚³ãƒ³ã«ãƒ‰ãƒ©ãƒƒã‚°ï¼†ãƒ‰ãƒ­ãƒƒãƒ—ã—ã¦ãã ã•ã„ã€‚", vbInformation, "ä½¿ã„æ–¹"
     WScript.Quit
 End If
 
-' --- Šeƒtƒ@ƒCƒ‹‚ğƒ‹[ƒvˆ— ---
+' --- ã‚µã‚¤ã‚ºæŒ‡å®šã®å…¥åŠ›ã‚’å—ã‘ä»˜ã‘ã‚‹ ---
+msg = "å‡ºåŠ›PNGã®ã‚µã‚¤ã‚ºã‚’æŒ‡å®šã—ã¦ãã ã•ã„ã€‚" & vbCrLf & vbCrLf & _
+      "  x1.5  ã¾ãŸã¯  x2    (1.5å€ã€2å€ã«æ‹¡å¤§)" & vbCrLf & _
+      "  150              (150%ã«æ‹¡å¤§)" & vbCrLf & _
+      "  w200             (å¹…ã‚’200pxã«)" & vbCrLf & _
+      "  h200             (é«˜ã•ã‚’200pxã«)" & vbCrLf & _
+      "  200x100          (å¹…200, é«˜ã•100pxã«)"
+      
+input = InputBox(msg, "ã‚µã‚¤ã‚ºæŒ‡å®š", "x2")
+
+If IsEmpty(input) Or input = "" Then WScript.Quit ' ã‚­ãƒ£ãƒ³ã‚»ãƒ«
+
+input = LCase(Trim(input)) ' å°æ–‡å­—ã«å¤‰æ›ã—ã€å‰å¾Œã®ã‚¹ãƒšãƒ¼ã‚¹ã‚’å‰Šé™¤
+strResizeParam = ""
+
+' --- å…¥åŠ›å€¤ã‚’è§£æã—ã¦ãƒªã‚µã‚¤ã‚ºãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’æ±ºå®š ---
+Dim density ' density ã¯è¤‡æ•°ã®æ¡ä»¶ã§ä½¿ã†ãŸã‚ã“ã“ã§å®£è¨€
+
+If Left(input, 1) = "x" And IsNumeric(Mid(input, 2)) Then
+    ' --- 1. å€ç‡æŒ‡å®š (x1.5, x2) ---
+    Dim multiplier
+    multiplier = CDbl(Mid(input, 2))
+    If multiplier <= 0 Then
+        MsgBox "ã‚¨ãƒ©ãƒ¼: 0ã‚ˆã‚Šå¤§ãã„å€ç‡ã‚’æŒ‡å®šã—ã¦ãã ã•ã„ã€‚", vbCritical, "å…¥åŠ›ã‚¨ãƒ©ãƒ¼"
+        WScript.Quit
+    End If
+    density = 96 * multiplier
+    strResizeParam = "-density " & density
+
+ElseIf Left(input, 1) = "w" And IsNumeric(Mid(input, 2)) Then
+    ' --- 2. å¹…æŒ‡å®š (é«˜å“è³ªåŒ–) ---
+    strResizeParam = "-density 600 -resize " & Mid(input, 2) & "x"
+
+ElseIf Left(input, 1) = "h" And IsNumeric(Mid(input, 2)) Then
+    ' --- 3. é«˜ã•æŒ‡å®š (é«˜å“è³ªåŒ–) ---
+    strResizeParam = "-density 600 -resize x" & Mid(input, 2)
+
+ElseIf InStr(input, "x") > 1 Then ' "x"ã‚’å«ã¿ã€ã‹ã¤å…ˆé ­ã§ã¯ãªã„
+    ' --- 4. å¹…xé«˜ã•æŒ‡å®š (é«˜å“è³ªåŒ–) ---
+    Dim parts, width, height
+    parts = Split(input, "x")
+    If UBound(parts) = 1 And IsNumeric(parts(0)) And IsNumeric(parts(1)) Then
+        width = parts(0)
+        height = parts(1)
+        strResizeParam = "-density 600 -resize " & width & "x" & height & "!" ' !ã§ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯”ã‚’ç„¡è¦–
+    End If
+
+ElseIf IsNumeric(input) Then
+    ' --- 5. ãƒ‘ãƒ¼ã‚»ãƒ³ãƒˆæŒ‡å®š (150, 200) ---
+    Dim scalePercent
+    scalePercent = CDbl(input)
+    If scalePercent <= 0 Then
+        MsgBox "ã‚¨ãƒ©ãƒ¼: 0ã‚ˆã‚Šå¤§ãã„æ•°å€¤ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚", vbCritical, "å…¥åŠ›ã‚¨ãƒ©ãƒ¼"
+        WScript.Quit
+    End If
+    density = 96 * (scalePercent / 100)
+    strResizeParam = "-density " & density
+
+End If
+
+' ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒæ±ºå®šã§ããªã‹ã£ãŸå ´åˆã¯ã‚¨ãƒ©ãƒ¼
+If strResizeParam = "" Then
+    MsgBox "ã‚¨ãƒ©ãƒ¼: å…¥åŠ›ã•ã‚ŒãŸå½¢å¼ãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ã€‚" & vbCrLf & "æŒ‡å®šã•ã‚ŒãŸå½¢å¼ã§å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚", vbCritical, "å…¥åŠ›ã‚¨ãƒ©ãƒ¼"
+    WScript.Quit
+End If
+
+' --- å„ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ«ãƒ¼ãƒ—å‡¦ç† ---
 For Each strSVGPath In objArgs
-
-    ' ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µAŠg’£q‚ªSVG‚©Šm”F
     If objFSO.FileExists(strSVGPath) And LCase(objFSO.GetExtensionName(strSVGPath)) = "svg" Then
+        strPNGPath = objFSO.BuildPath(objFSO.GetParentFolderName(strSVGPath), objFSO.GetBaseName(strSVGPath) & ".png")
+        
+        ' ImageMagickã®ã‚³ãƒãƒ³ãƒ‰ã‚’çµ„ã¿ç«‹ã¦ã‚‹
+        strCommand = "magick convert -background none " & strResizeParam & " """ & strSVGPath & """ """ & strPNGPath & """"
 
-        ' o—Í‚·‚éPNGƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ğ¶¬ (—á: icon.svg -> icon.png)
-        strPNGPath = objFSO.BuildPath( _
-            objFSO.GetParentFolderName(strSVGPath), _
-            objFSO.GetBaseName(strSVGPath) & ".png" _
-        )
-
-        ' ImageMagick‚ğÀs‚·‚é‚½‚ß‚ÌƒRƒ}ƒ“ƒh‚ğ‘g‚İ—§‚Ä‚é
-        ' yd—vz-density 192: SVG‚ğ“Ç‚İ‚ŞÛ‚Ì‰ğ‘œ“x‚ğ•W€(96dpi)‚Ì2”{‚Éw’è‚µ‚Ü‚·B
-        '                      ‚±‚ê‚É‚æ‚èAƒ‰ƒXƒ^ƒ‰ƒCƒY(ƒrƒbƒgƒ}ƒbƒv‰»)“_‚Å2”{‚ÌƒsƒNƒZƒ‹ƒTƒCƒY‚É‚È‚è‚Ü‚·B
-        '                      ‚±‚ÌƒIƒvƒVƒ‡ƒ“‚Í“ü—Íƒtƒ@ƒCƒ‹‚æ‚èu‘Ov‚É‹Lq‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
-        ' -background none: ”wŒi‚ğ“§‰ß‚Éİ’è
-        strCommand = "magick convert -density 192 -background none """ & strSVGPath & """ """ & strPNGPath & """"
-
-        ' ƒRƒ}ƒ“ƒh‚ğÀs
-        ' ‘æ2ˆø” 0: ƒRƒ}ƒ“ƒhƒvƒƒ“ƒvƒg‚ÌƒEƒBƒ“ƒhƒE‚ğ”ñ•\¦‚É‚·‚é
-        ' ‘æ3ˆø” True: ƒRƒ}ƒ“ƒh‚Ìˆ—‚ªŠ®—¹‚·‚é‚Ü‚Å‘Ò‹@‚·‚é
+        ' ã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œ
         On Error Resume Next
         objShell.Run strCommand, 0, True
         If Err.Number <> 0 Then
-            MsgBox "ImageMagick‚ÌÀs‚É¸”s‚µ‚Ü‚µ‚½B" & vbCrLf & _
-                   "ImageMagick‚ª³‚µ‚­ƒCƒ“ƒXƒg[ƒ‹‚³‚êAPATH‚ª’Ê‚Á‚Ä‚¢‚é‚©Šm”F‚µ‚Ä‚­‚¾‚³‚¢B" & vbCrLf & vbCrLf & _
-                   "ÀsƒRƒ}ƒ“ƒh: " & strCommand, vbCritical, "ÀsƒGƒ‰["
+            MsgBox "ImageMagickã®å®Ÿè¡Œã«å¤±æ•—ã—ã¾ã—ãŸã€‚" & vbCrLf & _
+                   "ImageMagickãŒæ­£ã—ãã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚Œã¦ã„ã‚‹ã‹ç¢ºèªã—ã¦ãã ã•ã„ã€‚", vbCritical, "å®Ÿè¡Œã‚¨ãƒ©ãƒ¼"
             Err.Clear
             WScript.Quit
         End If
         On Error GoTo 0
         
         fileCount = fileCount + 1
-
     End If
 Next
 
-' --- Š®—¹ƒƒbƒZ[ƒW ---
+' --- å®Œäº†ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ ---
 If fileCount > 0 Then
-    MsgBox fileCount & "ŒÂ‚ÌSVGƒtƒ@ƒCƒ‹‚ğ‚‰æ¿PNG‚É•ÏŠ·‚µ‚Ü‚µ‚½B", vbInformation, "ˆ—Š®—¹"
+    MsgBox fileCount & "å€‹ã®SVGãƒ•ã‚¡ã‚¤ãƒ«ã‚’æŒ‡å®šã®ã‚µã‚¤ã‚ºã§PNGã«å¤‰æ›ã—ã¾ã—ãŸã€‚", vbInformation, "å‡¦ç†å®Œäº†"
 Else
-    MsgBox "ˆ—‘ÎÛ‚ÌSVGƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½B", vbExclamation, "ˆ—Š®—¹"
+    MsgBox "å‡¦ç†å¯¾è±¡ã®SVGãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚", vbExclamation, "å‡¦ç†å®Œäº†"
 End If
 
-' --- ƒIƒuƒWƒFƒNƒg‚Ì‰ğ•ú ---
+' --- ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®è§£æ”¾ ---
 Set objShell = Nothing
 Set objFSO = Nothing
 Set objArgs = Nothing
